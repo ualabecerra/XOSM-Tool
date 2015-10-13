@@ -24,9 +24,7 @@ Volunteered geographic information (VGI) makes available a very large resource o
 
 ## XOSM Tool Architecture
 
-XOSM-Tool/Figures/XOSM.pdf
-
-![Alt text](https://github.com/ualabecerra/XOSM-Tool/blob/master/Figures/XOSM.pdf)
+![Alt text](https://raw.githubusercontent.com/ualabecerra/XOSM-Tool/master/Figures/XOSM/XOSM.001.png)
 
 ## OSM Indexing
 In order to handle large city maps, in which the layer can include many objects, an R\*-tree structure to index objects is used. The R\*-tree structure is based, as usual, on MBRs to hierarchically organize the content of an OSM map. Moreover, they are also used to enclose the nodes and ways of OSM in leaves of such structure. Figure shows a visual 
@@ -40,13 +38,16 @@ MBR enclosing the children nodes, while leaf tag contains the MBR of OSM ways an
 ![Alt text](https://raw.githubusercontent.com/ualabecerra/OSMXQuery/master/ConferenceBetaDeveloper/GISTAM2015/ExampleFigures/FigureIndexNew.png)
 
 ## Examples
-* Example 1. Retrieve the schools and high schools close to  *Calzada de Castro* street:
+* Example 1. Retrieve the street to the north of the street *Calle Calzada de Castro*:
 
 ```
-fn:filter(rt:getLayerByName(.,"Calle Calzada de Castro"), osm:searchTags(?,("high school", "school")))
+let $street := xosm_rtj:getElementByName(.,"Calle Calzada de Castro"),
+$layer := xosm_rtj:getLayerByName(.,"Calle Calzada de Castro",0.001)
+return
+fn:filter(fn:filter($layer,xosm_sp:furtherNorthWays($street,?)),xosm_kw(?,"highway"))
 ```
 
-![Alt text](https://raw.githubusercontent.com/ualabecerra/OSMXQuery/master/ConferenceBetaDeveloper/GISTAM2015/ExampleFigures/FigureExample1.png)
+![Alt text](https://raw.githubusercontent.com/ualabecerra/XOSM-Tool/master/Figures/FigureExample1.png)
 
 
 * Example 2. Retrieve the streets crossing *Calzada de Castro* and
