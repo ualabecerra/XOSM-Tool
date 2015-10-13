@@ -160,6 +160,8 @@ return
 xosm_ag:minDistance(xosm_ag:metricMode($restaurants,"cuisine"),
 $street)
 ```
+![Alt text](https://raw.githubusercontent.com/ualabecerra/XOSM-Tool/master/Figures/FigureExample13.png)
+
 ## Benchmarks
 we show the benchmarks of the proposed library.
 We have used the *BaseX Query* processor in a HP Proliant (two 
@@ -175,10 +177,34 @@ and, finally, *Brisbane*
 
 ![Alt text](https://raw.githubusercontent.com/ualabecerra/XOSM-Tool/master/Figures/agg-3.png)
 
-## Conclusions and Future Work
-We have presented an XQuery library for querying OSM. We have defined a set of OSM Operators suitable for querying points and streets from OSM. We have shown how higher order facilities of XQuery enable the definition of complex queries over OSM involving composition and keyword searching. We have provided some benchmarks using our library that take 
-profit from the R-tree structure used to index OSM. As future work firstly, we would like to extend our library to handle closed ways of OSM, in order to query about buildings, parks, etc. 
-Secondly, we would like to enrich the repertoire of OSM operators for points and streets: distance based queries, ranked queries, etc.
+## PotGis Comparative
+PostGreSQL is a well-known RDBMS with a spatial extension called PostGIS. PostGIS adds datatypes and spatial
+operators to PostGreSQL. Indexing of spatial data is carried out by R-Tree-over-GiST scheme.
+Open Street Map can be handled by PostGIS with the following tools: (1) Osmosis: a Java-based library for OSM loading, writing and ordering; (2) Osm2pgsql on top of osmosis, to transform OSM; 
+(3) Imposm a Python-based tool to import OSM in XML and PBF *Protocolbuffer Binary Format* formats. Although PostGIS could be adopted in our framework for storing/indexing OSM geometries, we have decided to provide a pure XQuery implementation instead of mapping XQuery to another query language.  We have compared our approach with PostGIS,
+in particular, the performance of (a) retrieval of a layer by name (i.e. spatial index
+or *getLayerByName*) and (b) retrieval of elements represented by a keyword (i.e. textual index or *getElementsByKeyword*).
 
-Finally, we would like to develop a JOSM plugin, as well as a Web site, with the aim to execute and
-to show results of queries directly in OSM maps.
+![Alt text](https://raw.githubusercontent.com/ualabecerra/XOSM-Tool/master/Figures/PostGISXQuery-1.png)
+
+![Alt text](https://raw.githubusercontent.com/ualabecerra/XOSM-Tool/master/Figures/PostGISXQuery-2.png)
+
+![Alt text](https://raw.githubusercontent.com/ualabecerra/XOSM-Tool/master/Figures/PostGISXQuery-3.png)
+
+![Alt text](https://raw.githubusercontent.com/ualabecerra/XOSM-Tool/master/Figures/PostGISXQuery-4.png)
+
+## Conclusions and Future Work
+We have presented a tool called XOSM for the querying of OSM maps.
+The XOSM tool uses a set of OSM (Boolean spatial, keyword and aggregation) operators to query OSM maps. The OSM operators have been implemented in XQuery. The tool has been implemented as a Web application which send requests to XQuery BaseX server. 
+As future work, we would like to extend our work as follows.
+
+* Relations on OSM: Our query language will be extended
+to work with relations. The OSM operator set will be enriched with operators for working with relations (bus routes, groups of buildings, postal addresses, house numbers, etc).
+*Path-based queries*: Our query language will be extended with queries about routes and navigation from one point (or street) to another of the city. The OSM operator set will be enriched with path-based operators. 
+* Other spatial queries}: Range, Nearest neighbor, etc.
+* Indexing for Aggregation}: R\*-tree structures are used to retrieve layers of OSM elements close to a given OSM element. We will study how to enrich these structures to be used in aggregation
+\cite{jurgens1998r,papadias2001efficient,rao2003spatial}.
+* OSM Transformations: XQuery can be used not only as query language but as transformation language. We would like to show how to transform OSM maps. Format transformations (XML to RDF, XML to KML, XML to SVG, etc) can be subject of study. 
+* OSM validation: The quality of OSM maps has been recently studied 
+for several authors. We have found in many cases that OSM maps are of poor quality and thus queries cannot find the expected results. The validation of properties on OSM maps will be subject of study.
+
