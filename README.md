@@ -22,6 +22,12 @@ Volunteered geographic information (VGI) makes available a very large resource o
 * [abecerra@ual.es](mailto:abecerra@ual.es)
 * [mtorres@ual.es](mailto:mtorres@ual.es)
 
+## XOSM Tool Architecture
+
+XOSM-Tool/Figures/XOSM.pdf
+
+![Alt text](https://github.com/ualabecerra/XOSM-Tool/blob/master/Figures/XOSM.pdf)
+
 ## OSM Indexing
 In order to handle large city maps, in which the layer can include many objects, an R\*-tree structure to index objects is used. The R\*-tree structure is based, as usual, on MBRs to hierarchically organize the content of an OSM map. Moreover, they are also used to enclose the nodes and ways of OSM in leaves of such structure. Figure shows a visual 
 representation of the R\*-tree of a OSM layer for Almería (Spain) city map. These ways have been highlighted in different colors (red and green)
