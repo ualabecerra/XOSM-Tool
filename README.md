@@ -46,49 +46,70 @@ $layer := xosm_rtj:getLayerByName(.,"Calle Calzada de Castro",0.001)
 return
 fn:filter(fn:filter($layer,xosm_sp:furtherNorthWays($street,?)),xosm_kw(?,"highway"))
 ```
-
 ![Alt text](https://raw.githubusercontent.com/ualabecerra/XOSM-Tool/master/Figures/FigureExample1.png)
-
 
 * Example 2. Retrieve the streets crossing *Calzada de Castro* and
 ending to *Avenida Montserrat* street:
 
 ```
-let $waysCrossing :=  fn:filter(rt:getLayerByName(.,"Calle Calzada de Castro"), 
-osm:isCrossing(?, osm:getOneWay(., "Calle Calzada de Castro")))
+let $s1 := xosm_rtj:getElementByName(., "Calle Calzada de Castro"),
+$s2 := xosm_rtj:getElementByName(.,"Avenida Nuestra Senora de Montserrat"),
+$layer := xosm_rtj:getLayerByName(.,"Calle Calzada de Castro",0),
+$cross := fn:filter($layer,xosm_sp:isCrossing(?,$s1))
+return fn:filter($cross,xosm_sp:isEndingTo(?,$s2)) 
+```
+
+![Alt text](https://raw.githubusercontent.com/ualabecerra/XOSM-Tool/master/Figures/FigureExample2.png)
+
+* Example 3. Retrieve the schools close to a street, wherein the street *Calzada de Castro* ends. 
+
+```
+let $street := xosm_rtj:getElementByName(., "Calle Calzada de Castro"),
+$layer := xosm_rtj:getLayerByName(.,"Calle Calzada de Castro", 0),
+$ending := fn:filter($layer,xosm_sp:isEndingTo($street,?))
+return
+fn:filter(fn:for-each($ending,xosm_rtj:getLayerByElement(.,?,0.001)), xosm_kw:searchKeyword(?,"school"))
+```
+![Alt text](https://raw.githubusercontent.com/ualabecerra/XOSM-Tool/master/Figures/FigureExample3.png)
+
+* Example 4. Retrieve the buildings in the intersections of *Calzada de Castro*
+```
+let $street := xosm_rtj:getElementByName(., "Calle Calzada de Castro"),
+$layer := xosm_rtj:getLayerByName(.,"Calle Calzada de Castro",0),
+$crossing := fn:filter($layer,xosm_sp:isCrossing(?, $street)),
+$intpoints := fn:for-each($crossing, xosm_sp:intersectionPoint(?,$street))
 return 
-fn:filter($waysCrossing, osm:isEndingTo(?,osm:getOneWay(., "Avenida Montserrat")))
+fn:filter(
+fn:for-each($intpoints, xosm_rtj:getLayerByElement(.,?,0.001)),xosm_kw:searchKeyword(?,"building"))
 ```
+![Alt text](https://raw.githubusercontent.com/ualabecerra/XOSM-Tool/master/Figures/FigureExample5.png)
 
-![Alt text](https://raw.githubusercontent.com/ualabecerra/OSMXQuery/master/ConferenceBetaDeveloper/GISTAM2015/ExampleFigures/FigureExample2.png)
-
-* Example 3. Retrieve the schools close to a street, wherein *Calzada de Castro* street ends. 
-
-```
-let $waysAllEndingTo :=  fn:filter(rt:getLayerByName(.,"Calle Calzada de Castro"),
-osm:isEndingTo(osm:getOneWay(., "Calle Calzada de Castro"),?))
-return 
-fn:filter(fn:for-each($waysAllEndingTo, rt:getLayerByOneWay(.,?)), osm:searchTags(?,"school"))
-```
-
-![Alt text](https://raw.githubusercontent.com/ualabecerra/OSMXQuery/master/ConferenceBetaDeveloper/GISTAM2015/ExampleFigures/FigureExample3.png)
-
-* Example 4. Retrieve the streets close
-to *Calzada de Castro* street, in which there is a supermarket *El Arbol* and a pharmacy (or chemist's).
+* Example 5. Retrieve schools and high schools close to the street *Calzada de Castro*
 
 ```
-osm:intersectionQuery( osm:unionQuery(rt:getLayerByName(.,"El Arbol"),rt:getLayerByName(.,"pharmacy")),
-rt:getLayerByName(.,"Calle Calzada de Castro"))
+for $layer in xosm_rtj:getLayerByName(.,"Calle Calzada de Castro",0.001)
+where xosm_kw:searchKeywordSet($layer,("high school","school"))
+return $layer
 ```
-![Alt text](https://raw.githubusercontent.com/ualabecerra/OSMXQuery/master/ConferenceBetaDeveloper/GISTAM2015/ExampleFigures/FigureExample4.png)
+![Alt text](https://raw.githubusercontent.com/ualabecerra/XOSM-Tool/master/Figures/FigureExample6.png)
 
-* Example 5. Retrieve the streets to the north of 
-*Calzada de Castro* street:
+* Example 6. Retrieve the areas of the city in which there is a pharmacy
+```
+for $pharmacies in xosm_rtj:getElementsByKeyword(.,"pharmacy")
+return xosm_rtj:getLayerByElement(.,$pharmacies,0.001)
+```
+![Alt text](https://raw.githubusercontent.com/ualabecerra/XOSM-Tool/master/Figures/FigureExample7.png)
 
+* Example 7. Retrieve the food areas close to hotels of the city
 ```
-fn:filter(rt:getLayerByName(.,"Calle Calzada de Castro"), osm:furtherNorthWays(osm:getOneWay(., 
-"Calle Calzada de Castro"),?)) 
+for $hotels in xosm_rtj:getElementsByKeyword(.,"hotel") 
+let $layer := xosm_rtj:getLayerByElement(.,$hotels,0.002) 
+where count(fn:filter($layer, xosm_kw:searchKeywordSet(?,("bar","restaurant")))) >= 3
+return $layer
 ```
+![Alt text](https://raw.githubusercontent.com/ualabecerra/XOSM-Tool/master/Figures/FigureExample8.png)
+
+
 
 ## Benchmarks
 Now we would like to show the benchmarks obtained from the previous examples, for datasets of different sizes.
