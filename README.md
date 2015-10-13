@@ -44,7 +44,7 @@ MBR enclosing the children nodes, while leaf tag contains the MBR of OSM ways an
 let $street := xosm_rtj:getElementByName(.,"Calle Calzada de Castro"),
 $layer := xosm_rtj:getLayerByName(.,"Calle Calzada de Castro",0.001)
 return
-fn:filter(fn:filter($layer,xosm_sp:furtherNorthWays($street,?)),xosm_kw(?,"highway"))
+fn:filter(fn:filter($layer,xosm_sp:furtherNorthWays($street,?)), xosm_kw(?,"highway"))
 ```
 ![Alt text](https://raw.githubusercontent.com/ualabecerra/XOSM-Tool/master/Figures/FigureExample1.png)
 
