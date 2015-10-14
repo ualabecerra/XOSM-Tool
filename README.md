@@ -31,10 +31,6 @@ In order to handle large city maps, in which the layer can include many objects,
 representation of the R\*-tree of a OSM layer for Almería (Spain) city map. These ways have been highlighted in different colors (red and green)
 and MBRs are represented by light green rectangles.
 
-The R-tree structure has been implemented as an XML document. That is, the tag based structure of XML is
-used for representing the R\*-tree with two main tags called *node* and *leaf*. A node tag represents the 
-MBR enclosing the children nodes, while leaf tag contains the MBR of OSM ways and nodes. The tag *mbr* is used to represent MBRs.
-
 ![Alt text](https://raw.githubusercontent.com/ualabecerra/OSMXQuery/master/ConferenceBetaDeveloper/GISTAM2015/ExampleFigures/FigureIndexNew.png)
 
 ## Examples
@@ -192,19 +188,3 @@ or *getLayerByName*) and (b) retrieval of elements represented by a keyword (i.e
 ![Alt text](https://raw.githubusercontent.com/ualabecerra/XOSM-Tool/master/Figures/PostGISXQuery-3.png)
 
 ![Alt text](https://raw.githubusercontent.com/ualabecerra/XOSM-Tool/master/Figures/PostGISXQuery-4.png)
-
-## Conclusions and Future Work
-We have presented a tool called XOSM for the querying of OSM maps.
-The XOSM tool uses a set of OSM (Boolean spatial, keyword and aggregation) operators to query OSM maps. The OSM operators have been implemented in XQuery. The tool has been implemented as a Web application which send requests to XQuery BaseX server. 
-As future work, we would like to extend our work as follows.
-
-* Relations on OSM: Our query language will be extended
-to work with relations. The OSM operator set will be enriched with operators for working with relations (bus routes, groups of buildings, postal addresses, house numbers, etc).
-*Path-based queries*: Our query language will be extended with queries about routes and navigation from one point (or street) to another of the city. The OSM operator set will be enriched with path-based operators. 
-* Other spatial queries}: Range, Nearest neighbor, etc.
-* Indexing for Aggregation}: R\*-tree structures are used to retrieve layers of OSM elements close to a given OSM element. We will study how to enrich these structures to be used in aggregation
-\cite{jurgens1998r,papadias2001efficient,rao2003spatial}.
-* OSM Transformations: XQuery can be used not only as query language but as transformation language. We would like to show how to transform OSM maps. Format transformations (XML to RDF, XML to KML, XML to SVG, etc) can be subject of study. 
-* OSM validation: The quality of OSM maps has been recently studied 
-for several authors. We have found in many cases that OSM maps are of poor quality and thus queries cannot find the expected results. The validation of properties on OSM maps will be subject of study.
-
