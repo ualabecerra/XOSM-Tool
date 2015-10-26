@@ -82,8 +82,10 @@ declare function xosm_gml:_osm2GmlPoint($lat as xs:decimal, $lon as xs:decimal)
   </gml:Point>  
 };
 
-declare function xosm_gml:_result2Osm($document as node()*)
+declare function xosm_gml:_result2Osm($document)
 {
+ if ($document[1]  instance of element()) 
+ then 
  <osm version='0.6' upload='true' generator='JOSM'>
  {
   let $document1 := $document
@@ -92,6 +94,7 @@ declare function xosm_gml:_result2Osm($document as node()*)
     then ($document[name(.) = 'node']) union (($document//way) union ($document//node)) 
     else ($document//way) union ($document//node)
  }
- </osm>
+ </osm> 
+ else $document
 };
 

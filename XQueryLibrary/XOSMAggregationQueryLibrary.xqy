@@ -83,7 +83,7 @@ declare function xosm_ag:metricMax($document as node()*, $metricOperator as xs:s
 declare function xosm_ag:metricSum($document as node()*,$metricOperator as xs:string)
 {
   fn:sum(fn:for-each($document, 
-         function($oneway){xosm_kw:getTagValue($oneway,$metricOperator)}))    
+         function($oneway){xosm_kw:getTagValue($oneway,$metricOperator)})) 
 };
 
 declare function xosm_ag:minDistance($document as node()*, $street as node())
