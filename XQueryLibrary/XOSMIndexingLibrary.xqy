@@ -112,10 +112,12 @@ declare function xosm_rtj:getLayerByElement($name as xs:string,$oneway as node()
 declare function xosm_rtj:getElementByName($name as xs:string,$elementName as xs:string)
 {
 <oneway name = '{$elementName}'>
-      {db:attribute($name,$elementName)/../..} 
-      {for $id in db:attribute($name,$elementName)/../..//nd/@ref return
-                                db:attribute($name, $id)/..[name()='node']}
-</oneway>   
+      {for $each in db:attribute($name,$elementName)/../..//tag[@k="name" and @v=$elementName]
+      return $each/..}   
+      { for $id in db:attribute($name,$elementName)/../..//nd/@ref 
+      where $id/../..//tag[@k="name" and @v=$elementName] return
+                                db:attribute($name, $id)/..[name()='node'] }                          
+</oneway>
 };
 
 declare function xosm_rtj:getElementsByKeyword($name as xs:string, $keyword as xs:string)
