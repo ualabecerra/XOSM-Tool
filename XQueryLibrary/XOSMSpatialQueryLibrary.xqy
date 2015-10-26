@@ -188,7 +188,7 @@ declare function xosm_sp:intersectionPoint($oneway1 as node(), $oneway2 as node(
          lon = "{fn:substring-after($values2,',')}"/>
        </oneway>
        else
-         <oneway name = "{$oneway2}">
+         <oneway name = "{$oneway2/@name}">
          <node visible = "true" lat = "{fn:substring-before($values,',')}" 
          lon = "{fn:substring-after($values,',')}"/>
        </oneway>
