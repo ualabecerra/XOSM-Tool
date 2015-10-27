@@ -185,12 +185,16 @@ declare function xosm_sp:intersectionPoint($oneway1 as node(), $oneway2 as node(
          return  
          <oneway name = "{$oneway2/@name}">
          <node visible = "true" lat = "{fn:substring-before($values2,',')}" 
-         lon = "{fn:substring-after($values2,',')}"/>
+         lon = "{fn:substring-after($values2,',')}">
+         <tag k="name" v="{$oneway1/@name}/{$oneway2/@name}"/>
+         </node>
        </oneway>
        else
          <oneway name = "{$oneway2/@name}">
          <node visible = "true" lat = "{fn:substring-before($values,',')}" 
-         lon = "{fn:substring-after($values,',')}"/>
+         lon = "{fn:substring-after($values,',')}">
+                  <tag k="name" v="{$oneway1/@name}/{$oneway2/@name}"/>
+         </node>
        </oneway>
    else ()
 };
@@ -255,158 +259,30 @@ declare function xosm_sp:furtherWestPoints($node1 as node(), $node2 as node())
 
 declare function xosm_sp:furtherNorthWays($oneway1 as node(), $oneway2 as node())
 {
-  let $multiLineString1 := xosm_gml:_osm2GmlLine($oneway1)
-  let $multilineString2 := xosm_gml:_osm2GmlLine($oneway2)
-  let $start_point1 := geo:start-point($multiLineString1/*),
-      $end_point1 := geo:end-point($multiLineString1/*)
-  return 
-   if (xosm_sp:isCrossing($oneway1,$oneway2))
-   then false()
-   else
-    if (geo:dimension($multilineString2) = 1)
-    then let $start_point2 := geo:start-point($multilineString2/*),
-         $end_point2 := geo:end-point($multilineString2/*)
-    return 
-     (xosm_sp:furtherNorthPoints( 
-       <node visible = 'true' lat = "{fn:substring-before($start_point1,',')}" 
-       lon = "{fn:substring-after($start_point1,',')}"/>
-       ,<node visible = 'true' lat = "{fn:substring-before($end_point2,',')}" 
-       lon = "{fn:substring-after($end_point2,',')}"/>
-        ) 
-      ) and     
-      (xosm_sp:furtherNorthPoints( 
-       <node visible = 'true' lat = "{fn:substring-before($start_point1,',')}" 
-       lon = "{fn:substring-after($start_point1,',')}"/>, 
-        <node visible = 'true' lat = "{fn:substring-before($start_point2,',')}" 
-       lon = "{fn:substring-after($start_point2,',')}"/>) )
-       and (xosm_sp:furtherNorthPoints( 
-       <node visible = 'true' lat = "{fn:substring-before($end_point1,',')}" 
-       lon = "{fn:substring-after($end_point1,',')}"/>,
-       <node visible = 'true' lat = "{fn:substring-before($end_point2,',')}" 
-       lon = "{fn:substring-after($end_point2,',')}"/>)) 
-   else 
-      (xosm_sp:furtherNorthPoints(
-       <node visible = 'true' lat = "{fn:substring-before($start_point1,',')}" 
-       lon = "{fn:substring-after($start_point1,',')}"/>,
-       <node visible = 'true' lat = "{geo:x($multilineString2)}" 
-       lon = "{geo:y($multilineString2)}"/>))
+  (every $node1 in $oneway1/node 
+   satisfies    
+   (every $node2 in $oneway2/node satisfies (xosm_sp:furtherNorthPoints($node1,$node2))))
 };
 
 declare function xosm_sp:furtherSouthWays($oneway1 as node(), $oneway2 as node())
 {
-  let $multiLineString1 := xosm_gml:_osm2GmlLine($oneway1)
-  let $multilineString2 := xosm_gml:_osm2GmlLine($oneway2)
-  let $start_point1 := geo:start-point($multiLineString1/*),
-      $end_point1 := geo:end-point($multiLineString1/*)
-  return 
-   if (xosm_sp:isCrossing($oneway1,$oneway2))
-   then false()
-   else
-    if (geo:dimension($multilineString2) = 1)
-    then let $start_point2 := geo:start-point($multilineString2/*),
-         $end_point2 := geo:end-point($multilineString2/*)
-    return 
-     (xosm_sp:furtherSouthPoints( 
-       <node visible = 'true' lat = "{fn:substring-before($start_point1,',')}" 
-       lon = "{fn:substring-after($start_point1,',')}"/>
-       ,<node visible = 'true' lat = "{fn:substring-before($end_point2,',')}" 
-       lon = "{fn:substring-after($end_point2,',')}"/>
-        ) 
-      ) and     
-      (xosm_sp:furtherSouthPoints( 
-       <node visible = 'true' lat = "{fn:substring-before($start_point1,',')}" 
-       lon = "{fn:substring-after($start_point1,',')}"/>, 
-        <node visible = 'true' lat = "{fn:substring-before($start_point2,',')}" 
-       lon = "{fn:substring-after($start_point2,',')}"/>) )
-       and (xosm_sp:furtherSouthPoints( 
-       <node visible = 'true' lat = "{fn:substring-before($end_point1,',')}" 
-       lon = "{fn:substring-after($end_point1,',')}"/>,
-       <node visible = 'true' lat = "{fn:substring-before($end_point2,',')}" 
-       lon = "{fn:substring-after($end_point2,',')}"/>)) 
-   else 
-      (xosm_sp:furtherSouthPoints(
-       <node visible = 'true' lat = "{fn:substring-before($start_point1,',')}" 
-       lon = "{fn:substring-after($start_point1,',')}"/>,
-       <node visible = 'true' lat = "{geo:x($multilineString2)}" 
-       lon = "{geo:y($multilineString2)}"/>))
+(every $node1 in $oneway1/node 
+   satisfies    
+   (every $node2 in $oneway2/node satisfies (xosm_sp:furtherSouthPoints($node1,$node2))))
 };
 
 declare function xosm_sp:furtherEastWays($oneway1 as node(), $oneway2 as node())
 {
-  let $multiLineString1 := xosm_gml:_osm2GmlLine($oneway1)
-  let $multilineString2 := xosm_gml:_osm2GmlLine($oneway2)
-  let $start_point1 := geo:start-point($multiLineString1/*),
-      $end_point1 := geo:end-point($multiLineString1/*)
-  return 
-   if (xosm_sp:isCrossing($oneway1,$oneway2))
-   then false()
-   else
-    if (geo:dimension($multilineString2) = 1)
-    then let $start_point2 := geo:start-point($multilineString2/*),
-         $end_point2 := geo:end-point($multilineString2/*)
-    return 
-     (xosm_sp:furtherEastPoints( 
-       <node visible = 'true' lat = "{fn:substring-before($start_point1,',')}" 
-       lon = "{fn:substring-after($start_point1,',')}"/>
-       ,<node visible = 'true' lat = "{fn:substring-before($end_point2,',')}" 
-       lon = "{fn:substring-after($end_point2,',')}"/>
-        ) 
-      ) and     
-      (xosm_sp:furtherEastPoints( 
-       <node visible = 'true' lat = "{fn:substring-before($start_point1,',')}" 
-       lon = "{fn:substring-after($start_point1,',')}"/>, 
-        <node visible = 'true' lat = "{fn:substring-before($start_point2,',')}" 
-       lon = "{fn:substring-after($start_point2,',')}"/>) )
-       and (xosm_sp:furtherEastPoints( 
-       <node visible = 'true' lat = "{fn:substring-before($end_point1,',')}" 
-       lon = "{fn:substring-after($end_point1,',')}"/>,
-       <node visible = 'true' lat = "{fn:substring-before($end_point2,',')}" 
-       lon = "{fn:substring-after($end_point2,',')}"/>)) 
-   else 
-      (xosm_sp:furtherEastPoints(
-       <node visible = 'true' lat = "{fn:substring-before($start_point1,',')}" 
-       lon = "{fn:substring-after($start_point1,',')}"/>,
-       <node visible = 'true' lat = "{geo:x($multilineString2)}" 
-       lon = "{geo:y($multilineString2)}"/>))
+  (every $node1 in $oneway1/node 
+   satisfies    
+   (every $node2 in $oneway2/node satisfies (xosm_sp:furtherEastPoints($node1,$node2))))
 };
 
 declare function xosm_sp:furtherWestWays($oneway1 as node(), $oneway2 as node())
 {
-  let $multiLineString1 := xosm_gml:_osm2GmlLine($oneway1)
-  let $multilineString2 := xosm_gml:_osm2GmlLine($oneway2)
-  let $start_point1 := geo:start-point($multiLineString1/*),
-      $end_point1 := geo:end-point($multiLineString1/*)
-  return 
-   if (xosm_sp:isCrossing($oneway1,$oneway2))
-   then false()
-   else
-    if (geo:dimension($multilineString2) = 1)
-    then let $start_point2 := geo:start-point($multilineString2/*),
-         $end_point2 := geo:end-point($multilineString2/*)
-    return 
-     (xosm_sp:furtherWestPoints( 
-       <node visible = 'true' lat = "{fn:substring-before($start_point1,',')}" 
-       lon = "{fn:substring-after($start_point1,',')}"/>
-       ,<node visible = 'true' lat = "{fn:substring-before($end_point2,',')}" 
-       lon = "{fn:substring-after($end_point2,',')}"/>
-        ) 
-      ) and     
-      (xosm_sp:furtherWestPoints( 
-       <node visible = 'true' lat = "{fn:substring-before($start_point1,',')}" 
-       lon = "{fn:substring-after($start_point1,',')}"/>, 
-        <node visible = 'true' lat = "{fn:substring-before($start_point2,',')}" 
-       lon = "{fn:substring-after($start_point2,',')}"/>) )
-       and (xosm_sp:furtherWestPoints( 
-       <node visible = 'true' lat = "{fn:substring-before($end_point1,',')}" 
-       lon = "{fn:substring-after($end_point1,',')}"/>,
-       <node visible = 'true' lat = "{fn:substring-before($end_point2,',')}" 
-       lon = "{fn:substring-after($end_point2,',')}"/>)) 
-   else 
-      (xosm_sp:furtherWestPoints(
-       <node visible = 'true' lat = "{fn:substring-before($start_point1,',')}" 
-       lon = "{fn:substring-after($start_point1,',')}"/>,
-       <node visible = 'true' lat = "{geo:x($multilineString2)}" 
-       lon = "{geo:y($multilineString2)}"/>))
+(every $node1 in $oneway1/node 
+   satisfies    
+   (every $node2 in $oneway2/node satisfies (xosm_sp:furtherWestPoints($node1,$node2))))
 };
 
 (: Returns the shortest distance between two ways, 
@@ -458,11 +334,11 @@ declare function xosm_sp:isIn($oneway1 as node(), $oneway2 as node())
 declare function xosm_sp:isNext($oneway1 as node(), $oneway2 as node())
 {
  let $distance := xosm_sp:getDistance($oneway1, $oneway2)
- return ($distance < 0.001 and $distance > 0.0001)
+ return ($distance < 0.001)
 };
 
 declare function xosm_sp:isAway($oneway1 as node(), $oneway2 as node())
 {
  let $distance := xosm_sp:getDistance($oneway1,$oneway2)
- return ($distance < 0.01 and $distance > 0.001)
+ return ($distance < 0.01)
 };
