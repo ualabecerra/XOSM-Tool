@@ -98,14 +98,29 @@ declare function xosm_sp:inSameWay($node1 as node(), $node2 as node(), $document
 
 declare function xosm_sp:isCrossing($oneway1 as node(), $oneway2 as node())
 {
-  xosm_sp:booleanQuery($oneway1,$oneway2,"geo:crosses")
+(: xosm_sp:booleanQuery($oneway1,$oneway2,"geo:crosses") :)
+ if  (count($oneway1/way) = 1)
+  then xosm_sp:booleanQuery($oneway1,$oneway2,"geo:crosses") 
+  else
+  (let $result := 
+      (for $eachWay in $oneway1/way
+       return 
+       let $oneway1part:= <oneway>{$eachWay union 
+           (for $nodeId in $eachWay/nd/@ref return $oneway1/node[@id=$nodeId][1])}
+           </oneway>
+       return 
+      if (xosm_sp:booleanQuery($oneway1part,$oneway2,"geo:touches"))
+       then data(1)  
+      else data(0))
+    return if (fn:sum($result) = 2) then true() else false()) 
 };
 
 (: Returns true whenever a ways is parallel to another one :)
 
 declare function xosm_sp:isNotCrossing($oneway1 as node(), $oneway2 as node())
 {
-  xosm_sp:booleanQuery($oneway1,$oneway2,"geo:disjoint")
+(:  not(xosm_sp:isCrossing($oneway1,$oneway2)) :)
+ xosm_sp:booleanQuery($oneway1,$oneway2,"geo:disjoint")
 };
 
 (: Returns true whenever a ways ends to another one :)
@@ -116,7 +131,7 @@ declare function xosm_sp:isEnding($oneway1 as node(), $oneway2 as node())
  (for $eachWay in $oneway1/way
  return 
   let $oneway1part:= <oneway>{$eachWay union 
- (for $nodeId in $eachWay/nd/@ref return $oneway1/node[@id=$nodeId])}</oneway>
+ (for $nodeId in $eachWay/nd/@ref return $oneway1/node[@id=$nodeId][1])}</oneway>
  return 
   if (xosm_sp:booleanQuery($oneway1part,$oneway2,"geo:touches"))
  then
@@ -128,8 +143,8 @@ declare function xosm_sp:isEnding($oneway1 as node(), $oneway2 as node())
     return 
            if (geo:equals($intersection_point/*,$start_point/*) or 
             geo:equals($intersection_point/*,$end_point/*)) then data(1) else data(0)
-    else data(0))
-   return if (fn:sum($result) = 0) then false() else true()
+           else data(0))
+   return if (fn:sum($result) = 1) then true() else false()  
 };
 
 declare function xosm_sp:isEndingFrom($oneway1 as node(), $oneway2 as node())
@@ -259,30 +274,38 @@ declare function xosm_sp:furtherWestPoints($node1 as node(), $node2 as node())
 
 declare function xosm_sp:furtherNorthWays($oneway1 as node(), $oneway2 as node())
 {
+  if ($oneway2/way) then
   (every $node1 in $oneway1/node 
    satisfies    
    (every $node2 in $oneway2/node satisfies (xosm_sp:furtherNorthPoints($node1,$node2))))
+  else false() 
 };
 
 declare function xosm_sp:furtherSouthWays($oneway1 as node(), $oneway2 as node())
 {
+ if ($oneway2/way) then 
 (every $node1 in $oneway1/node 
    satisfies    
    (every $node2 in $oneway2/node satisfies (xosm_sp:furtherSouthPoints($node1,$node2))))
+ else false()
 };
 
 declare function xosm_sp:furtherEastWays($oneway1 as node(), $oneway2 as node())
 {
+  if ($oneway2/way) then
   (every $node1 in $oneway1/node 
    satisfies    
    (every $node2 in $oneway2/node satisfies (xosm_sp:furtherEastPoints($node1,$node2))))
+  else false()
 };
 
 declare function xosm_sp:furtherWestWays($oneway1 as node(), $oneway2 as node())
 {
+ if ($oneway2/way) then
 (every $node1 in $oneway1/node 
    satisfies    
    (every $node2 in $oneway2/node satisfies (xosm_sp:furtherWestPoints($node1,$node2))))
+  else false()
 };
 
 (: Returns the shortest distance between two ways, 
@@ -342,3 +365,4 @@ declare function xosm_sp:isAway($oneway1 as node(), $oneway2 as node())
  let $distance := xosm_sp:getDistance($oneway1,$oneway2)
  return ($distance < 0.01)
 };
+
