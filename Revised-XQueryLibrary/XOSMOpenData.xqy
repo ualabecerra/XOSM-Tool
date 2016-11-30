@@ -31,7 +31,7 @@ for $i in 1 to count($features)
 return
 
 if ($features[$i]/geometry/type="Point") then
-<oneway name="{{$features[$i]/properties/*[name(.)=$name]/text()}}" type="point">
+<oneway name="{$features[$i]/properties/*[name(.)=$name]/text()}" type="point">
 <node version="{$i}" visible='true' id="{$i}" 
   lat="{($features[$i]/geometry/coordinates/_)[2]}" 
   lon="{($features[$i]/geometry/coordinates/_)[1]}">
@@ -235,7 +235,7 @@ else
 else () 
 };
 
-declare function xosm_open:csv($file,$name,$lat,$lon)
+declare function xosm_open:csv($file,$name,$lon,$lat)
 {
 let $text := fetch:text($file)
 let $csv := csv:parse($text, map { 'header': true() })
@@ -261,9 +261,9 @@ lon="{$reca/*[name(.)=$lon]/text()}">
 declare function xosm_open:wiki_element($node)
 {
   if ($node/way) then 
-  xosm_open:dbpedia(($node/node)[1]/@lat,($node/node)[1]/@lon)
+  xosm_open:dbpedia(($node/node)[1]/@lon,($node/node)[1]/@lat)
   else
-  xosm_open:dbpedia($node/node/@lat,$node/node/@lon)
+  xosm_open:dbpedia($node/node/@lon,$node/node/@lat)
 };
 
 declare function xosm_open:wiki_coordinates($lon,$lat)
@@ -274,7 +274,7 @@ declare function xosm_open:wiki_coordinates($lon,$lat)
 declare function xosm_open:wiki_name($spatialIndex,$name)
 {
   let  $s1 :=  xosm_rld:getElementByName ($spatialIndex, $name)
-return xosm_open:dbpedia(($s1/node)[1]/@lat,($s1/node)[1]/@lon)
+return xosm_open:dbpedia(($s1/node)[1]/@lon,($s1/node)[1]/@lat)
 };
 
 declare function xosm_open:rdf_osm($rdf)
@@ -299,7 +299,7 @@ declare function xosm_open:rdf_osm($rdf)
   </oneway>
 };
 
-declare function xosm_open:dbpedia($lat,$lon)
+declare function xosm_open:dbpedia($lon,$lat)
 {
 let $url := concat(concat(concat(concat(
   "http://api.geonames.org/findNearbyWikipedia?lat=",$lat),"&amp;lng="),$lon),"&amp;username=myapp")
@@ -309,7 +309,7 @@ let $st := concat(concat("http://dbpedia.org/data/",substring-after($wp,"http://
 return xosm_open:rdf_osm(doc($st))
 };
 
-declare function xosm_open:tixik_coordinates($lat,$lon)
+declare function xosm_open:tixik_coordinates($lon,$lat)
 {
   let $doc := doc(concat(concat(concat(concat("http://www.tixik.com/api/nearby?lat=",$lat),"&amp;lng="),$lon),"&amp;limit=50&amp;key=demo"))
   for $item in $doc/*[name(.)="tixik"]/*[name(.)="items"]/*[name(.)="item"]
@@ -332,7 +332,7 @@ return xosm_open:tixik_coordinates(($s1/node)[1]/@lat,($s1/node)[1]/@lon)
 declare function xosm_open:tixik_element($node)
 {
   if ($node/way) then 
-  xosm_open:tixik_coordinates(($node/node)[1]/@lat,($node/node)[1]/@lon)
+  xosm_open:tixik_coordinates(($node/node)[1]/@lon,($node/node)[1]/@lat)
   else
-  xosm_open:tixik_coordinates($node/node/@lat,$node/node/@lon)
+  xosm_open:tixik_coordinates($node/node/@lon,$node/node/@lat)
 };
