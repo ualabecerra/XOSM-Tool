@@ -3,7 +3,7 @@
 ## Abstract
 Volunteered Geographic Information (VGI) describes geographic in- formation systems based on crowdsourcing, in which users collaborate to collect spatial data of urban and rural areas on the earth. One of the most established VGI is OpenStreetMap (OSM) offering data of urban and rural maps from the earth. In this paper a Web tool, called XOSM (XQuery for OpenStreetMap), for the processing of geospatial queries on OSM is presented. The tool is equipped with a rich query language based on a set of operators defined for OSM which have been implemented as a library of the XML query language XQuery. The library provides a rich repertoire of spatial, keyword and aggregation based functions, which act on the XML representation of an OSM layer. The use of the higher order facilities of XQuery makes possible the definition of complex geospatial queries involving spa- tial relations, keyword searching and aggregation functions. XOSM indexes OSM data enabling efficient retrieval of answers. The XOSM library also enables the definition of queries combining OSM layers and layers created from Linked Open Data resources (KML, GeoJSON, CSV and RDF). The tool also provides an API to execute XQuery queries using the library.
 
-![](https://raw.githubusercontent.com/ualabecerra/XOSM-Tool/master/Figures/XOSM/xosm-pic.png)
+![Alt text](https://raw.githubusercontent.com/ualabecerra/XOSM-Tool/master/Figures/XOSM/xosm-pic.png)
 
 ### TEAM:
 
@@ -24,25 +24,18 @@ Volunteered Geographic Information (VGI) describes geographic in- formation syst
 
 ## XOSM Tool Architecture
 
-![Alt text](https://raw.githubusercontent.com/ualabecerra/XOSM-Tool/master/Figures/XOSM/XOSM.001.png)
+![Alt text](https://raw.githubusercontent.com/ualabecerra/XOSM-Tool/master/Figures/XOSM/structure.png)
 
 ## XOSM Indexing
-In order to handle large city maps, in which the layer can include many objects, an R\*-tree structure to index objects is used. The R\*-tree structure is based, as usual, on MBRs to hierarchically organize the content of an OSM map. Moreover, they are also used to enclose the nodes and ways of OSM in leaves of such structure. Figure shows a visual 
-representation of the R\*-tree of a OSM layer for Almería (Spain) city map. These ways have been highlighted in different colors (red and green)
-and MBRs are represented by light green rectangles.
-
-![Alt text](https://raw.githubusercontent.com/ualabecerra/OSMXQuery/master/ConferenceBetaDeveloper/GISTAM2015/ExampleFigures/FigureIndexNew.png)
+he indexing process is made following two strategies: R∗-tree on the fly indexing with live data (RLD) and PostGIS indexing with backup data (PBD).Tables 2 and 3 show the functions to retrieve elements from OSM maps. getElementByName retrieves an OSM element by name, that is, it returns, given an OSM map m = (S,K), the OSM element s ∈ S such as name(s) = n. get- LayerByName(m,n,d) obtains given the name n of an OSM element, the OSM elements of the OSM map m = (S,K) at distance d of n. The same can be said for getLayerByElement(m,e,d), but here an OSM element e is passed as argu- ment. In RLD, the OSM map are organized in a R∗-tree, and thus getLayerBy- Name and getLayerByElement return the elements at MBR distance d, while in case of PBD, getLayerByName and getLayerByElement return the elements from a given distance d. getElementsByKeyword(m,k) retrieves OSM elements of the OSM map m = (S, K) by keyword k. The keyword can be either the key function or the value. Finally, getLayerByBB(m,mlat,Mlat,mlon,Mlon) retrieves the OSM elements in a certain area of the OSM map m = (S, K) given by a bounding box (mlat,Mlat,mlon,Mlon).Our proposed query language mainly uses getLayerByName, i.e., queries have to be focused on a certain area of interest, given by the name of a node (park, pharmacy, etc.,), or by the name of a way (street, building, etc.,). Once the layer from the area of interest is retrieved, the repertoire of OSM operators in combina- tion with higher order functions can be applied to produce complex queries. The answer of a query is an OSM layer including OSM elements of the area of interest. Nevertheless, getElementsByKeyword can be also used to retrieve OSM elements by keyword in a certain area. And also getLayerByBB can be used to retrieve all the elements enclosed by an area defined by a bounding box. In all the cases, the area is selected by the user (manually or using the search text field in the Web tool).
 
 ## Examples
-* Example 1. Retrieve the street to the north of the street *Calle Calzada de Castro*:
+* Example 1. Retrieve the streets in London intersecting *Haymarket* and touching *Trafalgar Square*:
 
 ```
-let $street := xosm_rtj:getElementByName(.,"Calle Calzada de Castro"),
-$layer := xosm_rtj:getLayerByName(.,"Calle Calzada de Castro",0.001)
-return
-fn:filter(fn:filter($layer,xosm_sp:furtherNorthWays($street,?)), xosm_kw(?,"highway"))
+let $layer := xosm_rld:getLayerByName(.,"Haymarket",0)let $s := xosm_rld:getElementByName(.,"Haymarket")let $ts := xosm_rld:getElementByName(.,"Trafalgar Square") return fn:filter(fn:filter($layer,xosm_sp:intersecting(?,$s)),xosm_sp:touching(?,$ts))
 ```
-![Alt text](https://raw.githubusercontent.com/ualabecerra/XOSM-Tool/master/Figures/FigureExample1.png)
+![Alt text](https://raw.githubusercontent.com/ualabecerra/XOSM-Tool/master/Figures/Example-1-v2.png)
 
 * Example 2. Retrieve the streets crossing *Calzada de Castro* and
 ending to *Avenida Montserrat* street:
