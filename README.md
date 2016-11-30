@@ -108,9 +108,9 @@ In this section, we show the benchmarks of the proposed tool. We analyze the fol
 * Comparison of XOSM RLD and PBD strategies. We compare the re- sponse time for query answering of the examples.
 * Comparison of XOSM PBD strategy and PostGIS. We compare the response time on spatial and keyword queries.For this benchmarking, we have used a HP Proliant (one quad core and 12GB RAM Memory) with Ubuntu Server (version 16.10). For the implementation, we have used the BaseX XQuery processor (version 8.3) and the PostGIS system over PostgreSQL (version 9.5).
 
-![Alt text](https://raw.githubusercontent.com/ualabecerra/XOSM-Tool/master/Figures/getlayer.pdf)
+![Alt text](https://raw.githubusercontent.com/ualabecerra/XOSM-Tool/master/Figures/getlayer.png)
 
-![Alt text](https://raw.githubusercontent.com/ualabecerra/XOSM-Tool/master/Figures/park-hotel.pdf)
+![Alt text](https://raw.githubusercontent.com/ualabecerra/XOSM-Tool/master/Figures/park-hotel.png)
 
 ![Alt text](https://raw.githubusercontent.com/ualabecerra/XOSM-Tool/master/Figures/examples-rldpbd.png)
 
