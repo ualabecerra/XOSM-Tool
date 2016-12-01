@@ -171,6 +171,11 @@ declare function xosm_gml:_result2Osm($document)
 
 declare function xosm_gml:_result2Oneway($document)
 {
+  if ($document instance of xs:string) then
+    $document 
+ else
+  if ($document instance of xs:double) then $document 
+  else
  if ($document[1][name(.) = 'oneway'])
  then 
  <xosm>
