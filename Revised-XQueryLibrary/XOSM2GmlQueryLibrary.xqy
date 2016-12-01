@@ -32,7 +32,7 @@ declare function xosm_gml:multipoint2Osm($multi)
 
 declare function xosm_gml:_gml2OsmPolygon($polygon)
 {
- let $tokens := tokenize(replace($polygon/gml:Polygon/gml:outerBoundaryIs/gml:LinearRing/gml:coordinates/text(),"&#xA;",""),' ')
+let $tokens := tokenize(replace($polygon/gml:Polygon/gml:outerBoundaryIs/gml:LinearRing/gml:coordinates/text(),"&#xA;",""),' ')
  let $tok := count($tokens)
  return
  <oneway type="area"><way version="1" visible='true'>
@@ -179,7 +179,8 @@ declare function xosm_gml:_result2Oneway($document)
  }
  </xosm> 
  else if (empty($document)) then "No Result" else  if ($document[1][name(.) = 'node']) 
-      then <xosm><oneway name = '{if ($document[1]//tag[@k = "name"]/@v) then $document[1]//tag[@k = "name"]/@v else "" }'>
+      then <xosm><oneway name = '{if ($document[1]//tag[@k = "name"]/@v) then $document[1]//tag[@k = "name"]/@v else "" }'
+       type = 'point'>
       { $document }
       </oneway>
       </xosm> 
