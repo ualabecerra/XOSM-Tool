@@ -42,7 +42,7 @@ let $document := db:open($name)
 for $node in ($document/osm/node[tag/@k="name"]) 
 return 
   <mbr name="{$node/tag[@k="name"]/@v}" x="{$node/@lon}" y="{$node/@lat}" z="{$node/@lon}" t="{$node/@lat}">
-  <oneway>
+  <oneway name="{$node/tag[@k="name"]/@v}" type="point">
    {$node}
    </oneway>
   </mbr>

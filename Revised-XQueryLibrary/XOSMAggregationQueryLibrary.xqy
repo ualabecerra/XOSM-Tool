@@ -15,13 +15,22 @@ declare namespace gml='http://www.opengis.net/gml';
 declare function xosm_ag:addAggregationTag($oneway as node(), $kValueToAdd as xs:string, $vValueToAdd as xs:string)
 {
   let $name := $oneway//tag[@k="name"]/@v
-  let $distance := $oneway/@distance
+  let $type := $oneway/@type
   return
-  <oneway name = "{$name}" distance = "{$distance}">
-    { (for $tag in $oneway/*
-       return ($tag)
-      ) union <tag k='{$kValueToAdd}' v='{$vValueToAdd}' /> }
-  </oneway>
+   if ($oneway/@distance) then
+    let $distance := $oneway/@distance 
+    return
+    <oneway name = "{$name}" distance = "{$distance}" type = "{$type}"> 
+      { (for $tag in $oneway/*
+        return ($tag)
+       ) union <tag k='{$kValueToAdd}' v='{$vValueToAdd}' /> }
+   </oneway>
+  else
+   <oneway name = "{$name}" type = "{$type}"> 
+      { (for $tag in $oneway/*
+        return ($tag)
+       ) union <tag k='{$kValueToAdd}' v='{$vValueToAdd}' /> }
+   </oneway>
 };
 
 declare function xosm_ag:auxiliaryMode($document as node()*,$metricOperator as xs:string)
